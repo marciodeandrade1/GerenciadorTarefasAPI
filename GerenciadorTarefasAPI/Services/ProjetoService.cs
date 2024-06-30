@@ -1,47 +1,37 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using AutoMapper;
+using GerenciadorTarefasAPI.DTOs;
 using GerenciadorTarefasAPI.Models;
 using GerenciadorTarefasAPI.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace GerenciadorTarefasAPI.Services
 {
     public class ProjetoService
     {
         private readonly IProjetoRepository _projetoRepository;
+        private readonly IMapper _mapper;
 
-        public ProjetoService(IProjetoRepository projetoRepository)
+        public ProjetoService(IProjetoRepository projetoRepository, IMapper mapper)
         {
             _projetoRepository = projetoRepository;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Projeto>> GetProjetosAsync()
+        public async Task<IEnumerable<ProjetoDTO>> GetProjetosAsync()
         {
-            return await _projetoRepository.GetProjetosAsync();
+            var projetos = await _projetoRepository.GetProjetosAsync();
+            return _mapper.Map<IEnumerable<ProjetoDTO>>(projetos);
         }
 
-        public async Task<Projeto> GetProjetoByIdAsync(int id)
+        public async Task CreateProjetoAsync(ProjetoDTO projetoDTO)
         {
-            return await _projetoRepository.GetProjetoByIdAsync(id);
-        }
-
-        public async Task CreateProjetoAsync(Projeto projeto)
-        {
+            var projeto = _mapper.Map<Projeto>(projetoDTO);
             await _projetoRepository.AddProjetoAsync(projeto);
         }
 
         public async Task RemoveProjetoAsync(int id)
         {
-            var projeto = await _projetoRepository.GetProjetoByIdAsync(id);
-            if (projeto == null)
-            {
-                throw new InvalidOperationException("Projeto não encontrado.");
-            }
-
-            if (projeto.Tarefas.Any(t => t.Status != "Concluída"))
-            {
-                throw new InvalidOperationException("Não é possível remover um projeto com tarefas pendentes.");
-            }
-
             await _projetoRepository.RemoveProjetoAsync(id);
         }
     }
