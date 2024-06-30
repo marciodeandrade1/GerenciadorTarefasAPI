@@ -1,6 +1,9 @@
 =============================
+
 Feedback e Melhorias Futuras
+
 =============================
+
 Para garantir que o GerenciadorTarefasAPI continue atendendo às necessidades dos usuários e se mantenha alinhado com os requisitos do negócio, gostaríamos de obter feedback contínuo e sugestões de melhorias do Product Owner (PO). Abaixo estão algumas áreas onde seu feedback é especialmente valioso:
 
 Questões para o Product Owner (PO) Priorização de Funcionalidades:
@@ -15,7 +18,9 @@ Como Fornecer Feedback
 Por favor, envie suas respostas ou sugestões para qualquer uma das questões acima diretamente aos desenvolvedores responsáveis pelo projeto. Se preferir, podemos agendar uma reunião para discutir detalhadamente as necessidades futuras e as melhorias planejadas para o GerenciadorTarefasAPI.
 
 ====================
+
 Pontos de Melhoria
+
 ====================
 
 Separação de Responsabilidades: Garantir que cada classe e componente do projeto siga o princípio da única responsabilidade (Single Responsibility Principle - SRP). Isso ajudará a manter o código mais coeso e facilita a manutenção. Refatoração de Lógica Complexa: Identificar partes do código que são complexas ou difíceis de entender e refatorá-las para melhorar a legibilidade e a manutenibilidade.
