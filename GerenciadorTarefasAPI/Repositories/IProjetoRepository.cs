@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using GerenciadorTarefasAPI.Models;
+﻿using GerenciadorTarefasAPI.Models;
 
 namespace GerenciadorTarefasAPI.Repositories
 {

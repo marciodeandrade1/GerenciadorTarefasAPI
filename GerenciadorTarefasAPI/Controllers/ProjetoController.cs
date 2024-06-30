@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using GerenciadorTarefasAPI.DTOs;
+﻿using GerenciadorTarefasAPI.DTOs;
 using GerenciadorTarefasAPI.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GerenciadorTarefasAPI.Controllers
 {

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using GerenciadorTarefasAPI.Data;
+﻿using GerenciadorTarefasAPI.Data;
 using GerenciadorTarefasAPI.Models;
 using Microsoft.EntityFrameworkCore;
 

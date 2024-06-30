@@ -2,8 +2,6 @@
 using GerenciadorTarefasAPI.DTOs;
 using GerenciadorTarefasAPI.Models;
 using GerenciadorTarefasAPI.Repositories;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace GerenciadorTarefasAPI.Services
 {
