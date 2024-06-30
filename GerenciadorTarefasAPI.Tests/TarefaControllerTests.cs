@@ -29,8 +29,8 @@ namespace GerenciadorTarefasAPI.Tests
             // Arrange
             var tarefas = new List<TarefaDTO>
             {
-                new TarefaDTO { Id = 1, Nome = "Tarefa 1", Descricao = "Descrição 1", ProjetoId = 1 },
-                new TarefaDTO { Id = 2, Nome = "Tarefa 2", Descricao = "Descrição 2", ProjetoId = 1 }
+                new TarefaDTO { Id = 1, Nome = "Tarefa 1", Descricao = "Descrição 1"  },
+                new TarefaDTO { Id = 2, Nome = "Tarefa 2", Descricao = "Descrição 2"  }
             };
 
             _tarefaServiceMock.Setup(service => service.GetTarefasByProjetoIdAsync(1)).ReturnsAsync(tarefas);
@@ -48,7 +48,7 @@ namespace GerenciadorTarefasAPI.Tests
         public async Task CreateTarefa_ReturnsCreatedAtActionResult_WithTaskDTO()
         {
             // Arrange
-            var tarefaDTO = new TarefaDTO { Id = 1, Nome = "Nova Tarefa", Descricao = "Nova Descrição", ProjetoId = 1 };
+            var tarefaDTO = new TarefaDTO { Id = 1, Nome = "Nova Tarefa", Descricao = "Nova Descrição" };
 
             // Act
             var result = await _controller.CreateTarefa(1, tarefaDTO);
@@ -63,7 +63,7 @@ namespace GerenciadorTarefasAPI.Tests
         public async Task UpdateTarefa_ReturnsNoContentResult_WhenTaskUpdated()
         {
             // Arrange
-            var tarefaDTO = new TarefaDTO { Id = 1, Nome = "Tarefa Atualizada", Descricao = "Descrição Atualizada", ProjetoId = 1 };
+            var tarefaDTO = new TarefaDTO { Id = 1, Nome = "Tarefa Atualizada", Descricao = "Descrição Atualizada" };
 
             _tarefaServiceMock.Setup(service => service.UpdateTarefaAsync(1, tarefaDTO)).Returns(Task.CompletedTask);
 

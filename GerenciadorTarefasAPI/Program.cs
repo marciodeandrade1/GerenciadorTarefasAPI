@@ -23,8 +23,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+#pragma warning disable CS8604 // Possible null reference argument.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(connectionString: builder.Configuration.GetConnectionString("DefaultConnection")));
+#pragma warning restore CS8604 // Possible null reference argument.
 
 builder.Services.AddScoped<IProjetoRepository, ProjetoRepository>();
 builder.Services.AddScoped<ITarefaRepository, TarefaRepository>();

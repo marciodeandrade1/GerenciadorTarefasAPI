@@ -32,8 +32,8 @@ namespace GerenciadorTarefasAPI.Tests
             // Arrange
             var projetos = new List<Projeto>
             {
-                new Projeto { Id = 1, Nome = "Projeto 1", Descricao = "Descrição 1" },
-                new Projeto { Id = 2, Nome = "Projeto 2", Descricao = "Descrição 2" }
+                new() { Id = 1, Nome = "Projeto 1"  },
+                new Projeto { Id = 2, Nome = "Projeto 2"  }
             };
 
             _projetoRepositoryMock.Setup(repo => repo.GetProjetosAsync()).ReturnsAsync(projetos);
@@ -50,7 +50,7 @@ namespace GerenciadorTarefasAPI.Tests
         public async Task CreateProjetoAsync_ShouldAddProjeto()
         {
             // Arrange
-            var projetoDTO = new ProjetoDTO { Nome = "Projeto Teste", Descricao = "Descrição Teste" };
+            var projetoDTO = new ProjetoDTO { Nome = "Projeto Teste" };
 
             // Act
             await _projetoService.CreateProjetoAsync(projetoDTO);
