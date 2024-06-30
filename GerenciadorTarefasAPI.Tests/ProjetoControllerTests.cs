@@ -1,12 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using GerenciadorTarefasAPI.Controllers;
-using GerenciadorTarefasAPI.DTOs;
+﻿using GerenciadorTarefasAPI.DTOs;
 using GerenciadorTarefasAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Xunit;
 
 public class ProjetoControllerTests
 {

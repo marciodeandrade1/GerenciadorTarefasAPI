@@ -1,12 +1,9 @@
-using Xunit;
-using Moq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using GerenciadorTarefasAPI.Services;
-using GerenciadorTarefasAPI.Repositories;
-using GerenciadorTarefasAPI.Models;
 using AutoMapper;
 using GerenciadorTarefasAPI.DTOs;
+using GerenciadorTarefasAPI.Models;
+using GerenciadorTarefasAPI.Repositories;
+using GerenciadorTarefasAPI.Services;
+using Moq;
 
 namespace GerenciadorTarefasAPI.Tests
 {
