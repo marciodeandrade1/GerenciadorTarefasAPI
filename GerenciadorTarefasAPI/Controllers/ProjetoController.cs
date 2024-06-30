@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using GerenciadorTarefasAPI.Models;
+using GerenciadorTarefasAPI.DTOs;
 using GerenciadorTarefasAPI.Services;
-using Microsoft.AspNetCore.Mvc;
 
 namespace GerenciadorTarefasAPI.Controllers
 {
@@ -11,23 +12,28 @@ namespace GerenciadorTarefasAPI.Controllers
     public class ProjetoController : ControllerBase
     {
         private readonly ProjetoService _projetoService;
+        private readonly ILogger<ProjetoController> _logger;
 
-        public ProjetoController(ProjetoService projetoService)
+        public ProjetoController(ProjetoService projetoService, ILogger<ProjetoController> logger)
         {
             _projetoService = projetoService;
+            _logger = logger;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Projeto>>> GetProjetos()
+        public async Task<ActionResult<IEnumerable<ProjetoDTO>>> GetProjetos()
         {
-            return Ok(await _projetoService.GetProjetosAsync());
+            _logger.LogInformation("Obtendo todos os projetos");
+            var projetos = await _projetoService.GetProjetosAsync();
+            return Ok(projetos);
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateProjeto(Projeto projeto)
+        public async Task<ActionResult> CreateProjeto(ProjetoDTO projetoDTO)
         {
-            await _projetoService.CreateProjetoAsync(projeto);
-            return CreatedAtAction(nameof(GetProjetos), new { id = projeto.Id }, projeto);
+            _logger.LogInformation("Criando um novo projeto");
+            await _projetoService.CreateProjetoAsync(projetoDTO);
+            return CreatedAtAction(nameof(GetProjetos), new { id = projetoDTO.Id }, projetoDTO);
         }
 
         [HttpDelete("{id}")]
@@ -35,11 +41,13 @@ namespace GerenciadorTarefasAPI.Controllers
         {
             try
             {
+                _logger.LogInformation($"Removendo projeto com id {id}");
                 await _projetoService.RemoveProjetoAsync(id);
                 return NoContent();
             }
             catch (InvalidOperationException ex)
             {
+                _logger.LogWarning(ex, "Tentativa de remover projeto com tarefas pendentes");
                 return BadRequest(ex.Message);
             }
         }

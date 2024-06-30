@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using GerenciadorTarefasAPI.Models;
+using GerenciadorTarefasAPI.DTOs;
 using GerenciadorTarefasAPI.Services;
-using Microsoft.AspNetCore.Mvc;
 
 namespace GerenciadorTarefasAPI.Controllers
 {
@@ -11,42 +12,42 @@ namespace GerenciadorTarefasAPI.Controllers
     public class TarefaController : ControllerBase
     {
         private readonly TarefaService _tarefaService;
+        private readonly ILogger<TarefaController> _logger;
 
-        public TarefaController(TarefaService tarefaService)
+        public TarefaController(TarefaService tarefaService, ILogger<TarefaController> logger)
         {
             _tarefaService = tarefaService;
+            _logger = logger;
         }
 
-        [HttpGet("projeto/{projetoId}")]
-        public async Task<ActionResult<IEnumerable<Tarefa>>> GetTarefasByProjetoId(int projetoId)
+        [HttpGet("{projetoId}")]
+        public async Task<ActionResult<IEnumerable<TarefaDTO>>> GetTarefasByProjetoId(int projetoId)
         {
-            return Ok(await _tarefaService.GetTarefasByProjetoIdAsync(projetoId));
+            _logger.LogInformation($"Obtendo tarefas para o projeto id {projetoId}");
+            var tarefas = await _tarefaService.GetTarefasByProjetoIdAsync(projetoId);
+            return Ok(tarefas);
         }
 
-        [HttpPost("projeto/{projetoId}")]
-        public async Task<ActionResult> CreateTarefa(int projetoId, Tarefa tarefa)
+        [HttpPost("{projetoId}")]
+        public async Task<ActionResult> CreateTarefa(int projetoId, TarefaDTO tarefaDTO)
         {
-            await _tarefaService.CreateTarefaAsync(projetoId, tarefa);
-            return CreatedAtAction(nameof(GetTarefasByProjetoId), new { projetoId = projetoId }, tarefa);
+            _logger.LogInformation($"Criando uma nova tarefa para o projeto id {projetoId}");
+            await _tarefaService.CreateTarefaAsync(projetoId, tarefaDTO);
+            return CreatedAtAction(nameof(GetTarefasByProjetoId), new { projetoId = projetoId }, tarefaDTO);
         }
 
         [HttpPut("{tarefaId}")]
-        public async Task<ActionResult> UpdateTarefa(int tarefaId, Tarefa tarefa)
+        public async Task<ActionResult> UpdateTarefa(int tarefaId, TarefaDTO tarefaDTO)
         {
-            try
-            {
-                await _tarefaService.UpdateTarefaAsync(tarefaId, tarefa);
-                return NoContent();
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            _logger.LogInformation($"Atualizando tarefa id {tarefaId}");
+            await _tarefaService.UpdateTarefaAsync(tarefaId, tarefaDTO);
+            return NoContent();
         }
 
         [HttpDelete("{tarefaId}")]
         public async Task<ActionResult> DeleteTarefa(int tarefaId)
         {
+            _logger.LogInformation($"Excluindo tarefa id {tarefaId}");
             await _tarefaService.DeleteTarefaAsync(tarefaId);
             return NoContent();
         }
