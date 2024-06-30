@@ -1,94 +1,93 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Xunit;
-using Moq;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using GerenciadorTarefasAPI.Controllers;
 using GerenciadorTarefasAPI.DTOs;
 using GerenciadorTarefasAPI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Xunit;
 
-namespace GerenciadorTarefasAPI.Tests
+public class ProjetoControllerTests
 {
-    public class ProjetoControllerTests
+    private readonly Mock<IProjetoService> _mockProjetoService;
+    private readonly Mock<ILogger<ProjetoController>> _mockLogger;
+    private readonly ProjetoController _controller;
+
+    public ProjetoControllerTests()
     {
-        private readonly Mock<ProjetoService> _projetoServiceMock;
-        private readonly Mock<ILogger<ProjetoController>> _loggerMock;
-        private readonly ProjetoController _controller;
+        _mockProjetoService = new Mock<IProjetoService>();
+        _mockLogger = new Mock<ILogger<ProjetoController>>();
+        _controller = new ProjetoController(_mockProjetoService.Object, _mockLogger.Object);
+    }
 
-        public ProjetoControllerTests()
+    [Fact]
+    public async Task GetProjetos_ReturnsOkResult_WithListOfProjetos()
+    {
+        // Arrange
+        var projetos = new List<ProjetoDTO>
         {
-            _projetoServiceMock = new Mock<ProjetoService>(null, null);
-            _loggerMock = new Mock<ILogger<ProjetoController>>();
-            _controller = new ProjetoController(_projetoServiceMock.Object, _loggerMock.Object);
-        }
+            new ProjetoDTO { Id = 1, Nome = "Projeto 1", Descricao = "Descricao 1" },
+            new ProjetoDTO { Id = 2, Nome = "Projeto 2", Descricao = "Descricao 2" }
+        };
+        _mockProjetoService.Setup(service => service.GetProjetosAsync())
+                           .ReturnsAsync(projetos);
 
-        [Fact]
-        public async Task GetProjetos_ReturnsOkResult_WithListOfProjects()
-        {
-            // Arrange
-            var projetos = new List<ProjetoDTO>
-            {
-                new ProjetoDTO { Id = 1, Nome = "Projeto 1", Descricao = "Descrição 1" },
-                new ProjetoDTO { Id = 2, Nome = "Projeto 2", Descricao = "Descrição 2" }
-            };
+        // Act
+        var result = await _controller.GetProjetos();
 
-            _projetoServiceMock.Setup(service => service.GetProjetosAsync()).ReturnsAsync(projetos);
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result.Result);
+        var returnValue = Assert.IsType<List<ProjetoDTO>>(okResult.Value);
+        Assert.Equal(2, returnValue.Count);
+    }
 
-            // Act
-            var result = await _controller.GetProjetos();
+    [Fact]
+    public async Task CreateProjeto_ReturnsCreatedAtActionResult()
+    {
+        // Arrange
+        var projetoDTO = new ProjetoDTO { Id = 3, Nome = "Novo Projeto", Descricao = "Nova Descricao" };
 
-            // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result.Result);
-            var returnValue = Assert.IsType<List<ProjetoDTO>>(okResult.Value);
-            Assert.Equal(2, returnValue.Count);
-        }
+        // Act
+        var result = await _controller.CreateProjeto(projetoDTO);
 
-        [Fact]
-        public async Task CreateProjeto_ReturnsCreatedAtActionResult_WithProjectDTO()
-        {
-            // Arrange
-            var projetoDTO = new ProjetoDTO { Id = 1, Nome = "Novo Projeto", Descricao = "Nova Descrição" };
+        // Assert
+        var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result);
+        Assert.Equal(nameof(_controller.GetProjetos), createdAtActionResult.ActionName);
+        Assert.Equal(projetoDTO, createdAtActionResult.Value);
+    }
 
-            // Act
-            var result = await _controller.CreateProjeto(projetoDTO);
+    [Fact]
+    public async Task RemoveProjeto_ReturnsNoContent_WhenProjectRemoved()
+    {
+        // Arrange
+        var projetoId = 1;
 
-            // Assert
-            var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result);
-            var returnValue = Assert.IsType<ProjetoDTO>(createdAtActionResult.Value);
-            Assert.Equal(projetoDTO.Nome, returnValue.Nome);
-        }
+        _mockProjetoService.Setup(service => service.RemoveProjetoAsync(projetoId))
+                           .Returns(Task.CompletedTask);
 
-        [Fact]
-        public async Task RemoveProjeto_ReturnsNoContentResult_WhenProjectRemoved()
-        {
-            // Arrange
-            var projetoId = 1;
+        // Act
+        var result = await _controller.RemoveProjeto(projetoId);
 
-            _projetoServiceMock.Setup(service => service.RemoveProjetoAsync(projetoId)).Returns(Task.CompletedTask);
+        // Assert
+        Assert.IsType<NoContentResult>(result);
+    }
 
-            // Act
-            var result = await _controller.RemoveProjeto(projetoId);
+    [Fact]
+    public async Task RemoveProjeto_ReturnsBadRequest_WhenProjectHasPendingTasks()
+    {
+        // Arrange
+        var projetoId = 1;
+        var errorMessage = "Tentativa de remover projeto com tarefas pendentes";
 
-            // Assert
-            Assert.IsType<NoContentResult>(result);
-        }
+        _mockProjetoService.Setup(service => service.RemoveProjetoAsync(projetoId))
+                           .ThrowsAsync(new InvalidOperationException(errorMessage));
 
-        [Fact]
-        public async Task RemoveProjeto_ReturnsBadRequest_WhenProjectHasPendingTasks()
-        {
-            // Arrange
-            var projetoId = 1;
-            var errorMessage = "Attempted to remove project with pending tasks";
+        // Act
+        var result = await _controller.RemoveProjeto(projetoId);
 
-            _projetoServiceMock.Setup(service => service.RemoveProjetoAsync(projetoId)).Throws(new InvalidOperationException(errorMessage));
-
-            // Act
-            var result = await _controller.RemoveProjeto(projetoId);
-
-            // Assert
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal(errorMessage, badRequestResult.Value);
-        }
+        // Assert
+        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal(errorMessage, badRequestResult.Value);
     }
 }

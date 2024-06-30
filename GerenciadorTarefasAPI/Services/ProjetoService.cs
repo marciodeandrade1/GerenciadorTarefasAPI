@@ -5,7 +5,7 @@ using GerenciadorTarefasAPI.Repositories;
 
 namespace GerenciadorTarefasAPI.Services
 {
-    public class ProjetoService
+    public class ProjetoService : IProjetoService
     {
         private readonly IProjetoRepository _projetoRepository;
         private readonly IMapper _mapper;
@@ -14,6 +14,10 @@ namespace GerenciadorTarefasAPI.Services
         {
             _projetoRepository = projetoRepository;
             _mapper = mapper;
+        }
+
+        public ProjetoService()
+        {
         }
 
         public async Task<IEnumerable<ProjetoDTO>> GetProjetosAsync()
