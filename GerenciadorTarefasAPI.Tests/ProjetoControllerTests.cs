@@ -1,6 +1,7 @@
 ﻿using GerenciadorTarefasAPI.DTOs;
 using GerenciadorTarefasAPI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -8,13 +9,15 @@ public class ProjetoControllerTests
 {
     private readonly Mock<IProjetoService> _mockProjetoService;
     private readonly Mock<ILogger<ProjetoController>> _mockLogger;
+    private readonly Mock<IDistributedCache> _mockDistributedCache;
     private readonly ProjetoController _controller;
 
     public ProjetoControllerTests()
     {
         _mockProjetoService = new Mock<IProjetoService>();
         _mockLogger = new Mock<ILogger<ProjetoController>>();
-        _controller = new ProjetoController(_mockProjetoService.Object, _mockLogger.Object);
+        _mockDistributedCache = new Mock<IDistributedCache>();
+        _controller = new ProjetoController(_mockProjetoService.Object, _mockLogger.Object, _mockDistributedCache.Object);
     }
 
     [Fact]
