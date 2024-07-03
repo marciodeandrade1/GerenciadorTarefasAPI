@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Newtonsoft.Json;
+using System.Text;
 
 public class ProjetoControllerTests
 {
@@ -29,8 +31,19 @@ public class ProjetoControllerTests
             new ProjetoDTO { Id = 1, Nome = "Projeto 1", Descricao = "Descricao 1" },
             new ProjetoDTO { Id = 2, Nome = "Projeto 2", Descricao = "Descricao 2" }
         };
+
         _mockProjetoService.Setup(service => service.GetProjetosAsync())
                            .ReturnsAsync(projetos);
+
+        var cachedData = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(projetos));
+
+        // Ensure cache returns null initially
+        _mockDistributedCache.Setup(cache => cache.GetAsync("projetoList", default))
+                             .ReturnsAsync((byte[])null);
+
+        // Ensure cache is set with the correct data
+        _mockDistributedCache.Setup(cache => cache.SetAsync("projetoList", It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>(), default))
+                             .Verifiable();
 
         // Act
         var result = await _controller.GetProjetos();
@@ -39,6 +52,10 @@ public class ProjetoControllerTests
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
         var returnValue = Assert.IsType<List<ProjetoDTO>>(okResult.Value);
         Assert.Equal(2, returnValue.Count);
+        Assert.Equal("Projeto 1", returnValue[0].Nome);
+        Assert.Equal("Projeto 2", returnValue[1].Nome);
+
+        _mockDistributedCache.Verify();
     }
 
     [Fact]
