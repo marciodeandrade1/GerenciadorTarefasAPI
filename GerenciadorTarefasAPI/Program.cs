@@ -1,10 +1,9 @@
-using Microsoft.EntityFrameworkCore;
 using GerenciadorTarefasAPI.Data;
+using GerenciadorTarefasAPI.Mappings;
 using GerenciadorTarefasAPI.Repositories;
 using GerenciadorTarefasAPI.Services;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
-using AutoMapper;
-using GerenciadorTarefasAPI.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +26,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString: builder.Configuration.GetConnectionString("DefaultConnection")));
 #pragma warning restore CS8604 // Possible null reference argument.
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = "localhost:6379";
+});
 
 builder.Services.AddScoped<IProjetoRepository, ProjetoRepository>();
 builder.Services.AddScoped<ITarefaRepository, TarefaRepository>();
